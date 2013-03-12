@@ -39,7 +39,8 @@
     });
     
     
-    //  LAZYLOADING CONSTRUCTOR AND METHOD ####################################
+    //  LAZY LOADING ###########################################################
+
     //  Lazyload constructor
     function lazyObject(elem, amd, func){
         this.elem = elem;
@@ -47,7 +48,7 @@
         this.func = func;
     }
     
-    //  Lazyload function
+    //  Lazyload methode
     function lazyLoad(){
         var elem = this.elem;
         var func = this.func;
@@ -62,27 +63,38 @@
             }
         });
     }
-    //  Declare method instance
+    // Declare method instance
     lazyObject.prototype.lazyLoad = lazyLoad;
     
-    //  Function to invoke lazy loading
-    function loadLazyScripts(){
-        //  Iterate through the objects in the lazyArray 
-        for(n in lazyArray){
+    
+    function loadLazyScripts(array){
+        
+        //  Copy array 
+        var items = array.concat();
+        
+        Asyncronous invocation 
+        setTimeout(function(){
+        
+            var item = items.shift();
+            
             //  Check if the current object returns any DOM elements from the jQuery selector
-            if(lazyArray[n].elem.length>0){
+            if(item.elem.length>0){
                 //  Load the current object values in to a new Lazyload object using the lazyObject construtor
-                var lazyObj = new lazyObject(lazyArray[n].elem, lazyArray[n].amd, lazyArray[n].func);
+                var lazyObj = new lazyObject(item.elem, item.amd, item.func);
                 //  Invoke lazyLoad method with the new object 
                 lazyObj.lazyLoad();
             }
-        }
+            
+            //  Iterate through the objects in the array 
+            if (items.length > 0){
+                setTimeout(arguments.callee, 1);
+            }
+            
+        }, 1);
     }
     
-    
-    //  LAZY LOADING CONFIG ####################################################
-        
-    /*  Loading DOM elements into an array of objects that will initiate lazy loading
+            
+    /*  CONFIG: Loading DOM elements into an array of objects that will initiate lazy loading
     
      *  elem: The jQuery selector that triggers the lazy load and gets passed to 'func'
      *  amd:  Asyncronous Script Modules (AMD) that need to load (see the require.config above)
@@ -90,6 +102,8 @@
      */
     require(['jquery'],function() { 
     
+        //  LAZYLOAD CONFIG ####################################################
+        
         var lazyArray = [
     
             {   elem: $("#selector01"),
@@ -100,8 +114,6 @@
                 amd:  ['script_shortname-01','script_shortname-02'], 
                 func: 'functionName02' }
         ];
-
-
         
         
         //  jQUERY DOMREADY ####################################################
@@ -109,8 +121,9 @@
         $(document).ready(function(){
             
             // Start lazyloading!       
-            loadLazyScripts();
+            loadLazyScripts(lazyArray);
 
         });
     
     });
+    
