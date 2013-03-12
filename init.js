@@ -72,7 +72,7 @@
         //  Copy array 
         var items = array.concat();
         
-        Asyncronous invocation 
+        // Asyncronous invocation 
         setTimeout(function(){
         
             var item = items.shift();
